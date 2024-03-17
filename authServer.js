@@ -1,10 +1,12 @@
 import "dotenv/config";
 import express from "express";
 import jwt from "jsonwebtoken";
+import cookieParser from "cookie-parser";
 
 const app = express();
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.post("/login", (req, res) => {
   // Authenticate and get user from DB
@@ -16,11 +18,23 @@ app.post("/login", (req, res) => {
 
   // Add Refresh Token into DB
 
-  res.status(200).json({ accessToken, refreshToken });
+  // Send cookies to client containing access and refresh token
+  res
+    .status(200)
+    .cookie("accessToken", accessToken, {
+      maxAge: process.env.COOKIE_EXPIRY,
+      //   secure: true, // the cookie is only sent over HTTPS
+    })
+    .cookie("refreshToken", refreshToken, {
+      maxAge: process.env.COOKIE_EXPIRY,
+      //   secure: true,
+    })
+    .json({ accessToken, refreshToken });
 });
 
 app.post("/token", (req, res) => {
-  const token = req.body.token;
+  //   const token = req.body.token;
+  const token = req.cookies.refreshToken;
 
   if (!token) return res.sendStatus(401);
 
@@ -34,10 +48,16 @@ app.post("/token", (req, res) => {
     },
     (err, user) => {
       if (err) return res.sendStatus(403);
-
+      // Send cookie to client containing access token
       const accessToken = generateAccessToken({ name: user.name });
 
-      res.status(200).json({ accessToken });
+      res
+        .status(200)
+        .cookie("accessToken", accessToken, {
+          maxAge: process.env.COOKIE_EXPIRY,
+          //   secure: true, // the cookie is only sent over HTTPS
+        })
+        .json({ accessToken });
     }
   );
 });

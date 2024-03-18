@@ -62,6 +62,15 @@ app.post("/token", (req, res) => {
   );
 });
 
+app.delete("/logout", (req, res) => {
+  // Delete Reference Token from DB
+
+  // Delete cookies stored on client-side
+  /* clearCookie does not send response and not close connection. 
+  We must send back response, or the cookie won't be deleted. */
+  res.status(204).clearCookie("accessToken").clearCookie("refreshToken").end();
+});
+
 function generateAccessToken(user) {
   return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
     expiresIn: process.env.ACCESS_TOKEN_EXPIRY,

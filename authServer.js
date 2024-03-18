@@ -48,9 +48,9 @@ app.post("/token", (req, res) => {
     },
     (err, user) => {
       if (err) return res.sendStatus(403);
-      // Send cookie to client containing access token
-      const accessToken = generateAccessToken({ name: user.name });
 
+      const accessToken = generateAccessToken({ name: user.name });
+      // Send cookie to client containing access token
       res
         .status(200)
         .cookie("accessToken", accessToken, {

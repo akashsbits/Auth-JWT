@@ -4,15 +4,17 @@
   "description": "Authentication workflow using JWT",
   "main": "app.js",
   "scripts": {
-    "dev": "nodemon app.js",
-    "dev-auth": "nodemon authServer.js",
-    "prod": "node app.js",
-    "prod-auth": "node authServer.js"
+    "dev-server": "nodemon app.js",
+    "dev-auth-server": "nodemon authServer.js",
+    "dev": "concurrently \"npm run dev-server\" \"npm run dev-auth-server\"",
+    "prod-server": "node app.js",
+    "prod-auth-server": "node authServer.js"
   },
   "type": "module",
   "author": "Akash Srivastava",
   "license": "ISC",
   "dependencies": {
+    "concurrently": "^8.2.2",
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.4.5",
     "express": "^4.18.3",
